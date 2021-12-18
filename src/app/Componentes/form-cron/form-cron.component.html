@@ -1,0 +1,592 @@
+<div class="container">
+<h3 class="title-alarms">{{Titulo}} <small>{{TituloAccionABMC[AccionABMC]}}</small></h3>
+<form name="FormFiltro" [formGroup]='FormFiltro' class="bg-light" *ngIf="AccionABMC == 'L'"> 
+	<div class="pt-3 container-fluid justify-content-center">        
+        <!-- Botones -->
+		<div class="row justify-content-center">
+			<button type="button" class="btn btn-primary col-1 justify-content-center" (click)="Buscar()">
+                <span class="fas fa-search"> </span> Search
+            </button>       
+            &nbsp;
+            <button type="button" class="btn btn-primary col-1 justify-content-center dropdown-toggle"  id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown">
+                <span class="fas fa-plus "> </span>  Add 
+            </button>           
+            <ul class="text-start dropdown-menu col-3 " aria-labelledby="navbarDropdownMenuLink">                
+                <li><button class="dropdown-item btn btn-primary " (click)="Agregar()">Add custom query</button></li>
+                <li><button class="dropdown-item btn btn-primary " (click)="Agregar2()">Add ticket notification</button></li>           
+            </ul>                            
+        </div>
+    </div>
+   		
+</form>
+
+<br>
+
+<!-- Eventos -->
+<h4 *ngIf="AccionABMC == 'L' && !SinBusquedasRealizadas || AccionABMC == 'L' && Lista?.length > 0 " class="text-center"><u>Scheduled Custom Queries</u></h4>
+<div id="divTablaResultados" *ngIf="AccionABMC == 'L' && Lista?.length > 0">
+    
+    <!--br-->
+    <table class="table table-bordered table-striped ">
+        <thead>
+            <tr>
+                <th class="text-center">Hour</th>
+                <th class="text-center">Minute</th>             
+                <!--th class="text-center">Day</th>
+                <th class="text-center">Month</th-->
+                <th class="text-center">Weekday</th>
+                <th>Task</th>
+                <th>Project</th>
+                <th>Query</th>
+                <th>Save as</th>
+                <th class="text-center">Delete</th>
+                <!--th class="text-center">Status</th>
+                <th class="text-center">Created</th>
+                <th class="text-center">User</th>
+                <th class="text-center text-nowrap">Actions</th-->
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let dto of Lista">
+                <td class="text-center">{{dto.Hora}}</td>
+                <td class="text-center">{{dto.Minuto}}</td>               
+                <!--td class="text-center">{{dto.Dia}}</td>
+                <td class="text-center">{{dto.Mes}}</td-->
+                <td class="text-center">{{dto.DiaSemana}}</td>
+                <td>{{dto.Tarea}}</td>
+                <td>{{dto.Proyecto}}</td>
+                <td>{{dto.Query}}</td>
+                <td>{{dto.Formato}}</td>
+                <td class="text-center text-nowrap">
+                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" (click)="Borrar(dto)">
+                        <span class="fas fa-trash"></span>
+                    </button>
+                </td>
+                <!--td>{{dto.Estado}}</td>
+                <td>{{dto.FechaAlta| date:'dd/MM/yyyy'}}</td>
+                <td>{{dto.Usuario}}</td>
+                <td class="text-center text-nowrap">
+                    <button type="button" class="btn btn-sm btn-outline-primary" title="Ver" (click)="Consultar(dto)">
+                        <span class="fas fa-eye"></span>
+                    </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" title="Modificar" (click)="Modificar(dto)">
+                        <span class="fas fa-pencil-alt"></span>
+                    </button>
+                        <button type="button" class="btn btn-sm btn-outline-{{ dto.Activo ? 'danger':'success'}}"
+                        title="{{dto.Activo ? 'Desactivar':'Activar'}}" (click)="ActivarDesactivar(dto)">
+                        <span class="fas fa-{{dto.Activo ? 'times':'check'}}"></span>
+                    </button>
+                </td-->                       
+            </tr>
+        </tbody>
+    </table>
+    
+
+
+<!-- Paginador-->
+<div id="divPaginador" class="col-sm-12">
+	<div class="row bg-light">
+		<div class="col-sm-3">
+			<span class="label label-default font-weight-bold"> Scheduled custom queries (count): {{RegistrosTotalQuerys}}</span>
+		</div>
+		<!--div class="col-sm-6 text-center">
+			<ngb-pagination [(page)]="Pagina" (pageChange)="Buscar()" [pageSize]="10" [maxSize]="10"
+				[collectionSize]="RegistrosTotal"></ngb-pagination>
+		</div-->
+		<!--div class="col-sm-3 text-right">
+			<button type="button" class="btn btn-primary" (click)="ImprimirListado()"><span class="fas fa-print"></span>
+                   Imprimir</button>
+		</div-->
+	</div>
+</div>
+</div>
+
+<!--div id="divMsjFormFiltro" class="alert alert-warning" *ngIf="AccionABMC == 'L' && !SinBusquedasRealizadas && Lista?.length== 0"-->
+<!--No se encontraron registros-->
+<div id="divMsjFormFiltro" class="alert alert-warning" *ngIf="AccionABMC == 'L' && Lista.length==0 && !SinBusquedasRealizadas">
+	<span class="fas fa-exclamation-sign"></span>{{Mensajes['SD']}}
+	<!-- texto: No se encontraron registros -->
+</div>
+<br>
+<h4 *ngIf="AccionABMC == 'L' && !SinBusquedasRealizadas2 || AccionABMC == 'L' && Lista22?.length > 0 " class="text-center"><u>Scheduled tickets notifications </u></h4>
+<div id="divTablaResultados2" *ngIf="AccionABMC == 'L' && Lista22?.length > 0">
+    
+    <!--br-->
+    <table class="table table-bordered table-striped ">
+        <thead>
+            <tr>
+                <th class="text-center">Hour</th>
+                <th class="text-center">Minute</th>             
+                <th class="text-center">Weekday</th>
+                <th>Task</th>
+                <th>Days to remind about</th> 
+                <th>Project</th>
+                <th>Category</th>
+                <th>Users</th>                        
+                <th class="text-center">Delete</th>               
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let dto of Lista22">
+                <td class="text-center">{{dto.Hora}}</td>
+                <td class="text-center">{{dto.Minuto}}</td>              
+                <td class="text-center">{{dto.DiaSemana}}</td>
+                <td>{{dto.Tarea}}</td>
+                <td>{{dto.Days}}</td>
+                <td>{{dto.Project}}</td>
+                <td>{{dto.Tracker}}</td>
+                <td class="text-center text-nowrap">
+                    <button type="button" class="btn btn-sm btn-outline-primary" title="See" (click)="VerUsuarios(dto)">
+                        <span class="fas fa-eye"></span>
+                    </button>
+                </td>
+                <td class="text-center text-nowrap">
+                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" (click)="Borrar(dto)">
+                        <span class="fas fa-trash"></span>
+                    </button>
+                </td>             
+            </tr>
+        </tbody>
+    </table>
+    
+
+
+<!-- Paginador-->
+<div id="divPaginador" class="col-sm-12">
+	<div class="row bg-light">
+		<div class="col-sm-3">
+			<span class="label label-default font-weight-bold">Scheduled tickets notifications(count): {{RegistrosTotalTicket}}</span>
+		</div>	
+	</div>
+</div>
+</div>
+
+<!--div id="divMsjFormFiltro" class="alert alert-warning" *ngIf="AccionABMC == 'L' && !SinBusquedasRealizadas && Lista?.length== 0"-->
+<!--No se encontraron registros-->
+<div class="alert alert-warning" *ngIf="AccionABMC == 'L' && Lista22.length==0 && !SinBusquedasRealizadas">
+	<span class="fas fa-exclamation-sign"></span>{{Mensajes['SD']}}
+	<!-- texto: No se encontraron registros -->
+</div>
+        
+
+<!-- Registro en Alta,Modificacion y Consulta -->
+                                        <!--*ngIf="AccionABMC == 'L'-->
+<form name="FormReg" [formGroup]='FormReg'  *ngIf="AccionABMC == 'A'" class="bg-light"> 
+    <h3 class="text-center">Scheduled custom query </h3>
+    <br>
+	<fieldset [disabled]="AccionABMC==='C'">       
+         <!--campo hora-->
+         <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="Hora">Hour <span
+                    class="text-danger">*</span></label>
+			<div class="col-sm-6">
+				<input type="text" placeholder="0-23 or *" class="form-control" formControlName="Hora" 
+         [ngClass]="{'is-invalid': (FormReg.controls.Hora.touched || submitted)  
+            && FormReg.controls.Hora.errors}" />
+
+				<span class="text-danger" *ngIf="(FormReg.controls.Hora.touched || submitted) 
+                        && FormReg.controls.Hora.errors?.required">
+                        enter value
+                </span>
+                <span class="text-danger" *ngIf="(FormReg.controls.Hora.touched || submitted) 
+                       && (FormReg.controls.Hora.errors?.min || FormReg.controls.Hora.errors?.max) ">
+                       Error
+                </span>
+                <span class="text-danger" *ngIf="(FormReg.controls.Hora.touched || submitted) 
+                       && FormReg.controls.Hora.errors?.pattern">
+                       only number
+                </span>
+			</div>
+		</div>
+        <!--campo minuto-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="Minuto">Minute <span
+                    class="text-danger">*</span></label>
+			<div class="col-sm-6">
+				<input type="text" placeholder="0-59 or *" class="form-control" formControlName="Minuto" 
+         [ngClass]="{'is-invalid': (FormReg.controls.Minuto.touched || submitted)  
+            && FormReg.controls.Minuto.errors}" />
+
+				<span class="text-danger" *ngIf="(FormReg.controls.Minuto.touched || submitted) 
+                        && FormReg.controls.Minuto.errors?.required">
+                        enter value
+                </span>
+                <span class="text-danger col-12" *ngIf="(FormReg.controls.Minuto.touched || submitted) 
+                       && (FormReg.controls.Minuto.errors?.min || FormReg.controls.Minuto.errors?.max) ">
+                       Error
+                </span>
+                
+                <span class="text-danger" *ngIf="(FormReg.controls.Minuto.touched || submitted) 
+                       && FormReg.controls.Minuto.errors?.pattern">
+                       only number
+                </span>
+			</div>
+        </div>  
+
+        <!--campo diaSemana-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="DiaSemana">Weekday <span class="input-group-btn">                
+                <button type="button" class="btn btn-sm btn-outline-primary" title="Modificar"(click)="ModalFormato()" >
+                <span class="fas fa-question-circle"></span>
+                </button>                   
+              </span> <span
+                    class="text-danger">*</span></label>
+                     
+			<div class="col-sm-6">
+				<input type="text" placeholder="0-7 or *" class="form-control" formControlName="DiaSemana" 
+         [ngClass]="{'is-invalid': (FormReg.controls.DiaSemana.touched || submitted)  
+            && FormReg.controls.DiaSemana.errors}" />
+
+				<span class="text-danger" *ngIf="(FormReg.controls.DiaSemana.touched || submitted) 
+                        && FormReg.controls.DiaSemana.errors?.required">
+                        enter value
+                </span>
+                <span class="text-danger" *ngIf="(FormReg.controls.DiaSemana.touched || submitted) 
+                       && (FormReg.controls.DiaSemana.errors?.min || FormReg.controls.DiaSemana.errors?.max) ">
+                       Error
+                </span>
+                <span class="text-danger" *ngIf="(FormReg.controls.DiaSemana.touched || submitted) 
+                       && FormReg.controls.DiaSemana.errors?.pattern">
+                       only number
+                </span>
+			</div>
+		</div>
+      
+        <!--campo proyectos-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="IdProyecto">
+                Projects <span class="text-danger">*</span>
+            </label>
+			<div class="col-sm-6">
+				<select name="IdProyecto" class="form-control form-select" formControlName="IdProyecto" (change)='cargarQuerys()'
+        [ngClass]="{'is-invalid': (FormReg.controls.IdProyecto.touched || submitted)  
+            && FormReg.controls.IdProyecto.errors}" >
+                    
+                    <option *ngFor="let opt of OpcionesProyectos" [ngValue]="opt.id">
+                        ‌{{ opt.name }}
+                    <option>
+                      
+                </select>
+				<span class="text-danger" *ngIf="(FormReg.controls.IdProyecto.touched || submitted) 
+                        && FormReg.controls.IdProyecto.errors?.required">
+                        enter value
+                </span>
+			</div>
+		</div>
+        <!--campo issues-querys-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="IdQuery">
+                Trouble tickets <span class="text-danger">*</span>
+            </label>
+			<div class="col-sm-6">
+				<select name="IdQuery" class="form-control form-select" formControlName="IdQuery"
+        [ngClass]="{'is-invalid': (FormReg.controls.IdQuery.touched || submitted)  
+            && FormReg.controls.IdQuery.errors}" >
+                    
+                    <option *ngFor="let opt of OpcionesQuery" [ngValue]="opt.id">
+                        ‌{{ opt.name }}
+                    <option>
+                </select>
+				<span class="text-danger" *ngIf="(FormReg.controls.IdQuery.touched || submitted) 
+                        && FormReg.controls.IdQuery.errors?.required">
+                        enter value
+                </span>
+			</div>
+		</div>
+        <!--campo formato-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="NombreFormato">
+                Save as <span class="text-danger">*</span>
+            </label>
+			<div class="col-sm-6">
+				<select name="NombreFormato" class="form-control form-select" formControlName="NombreFormato"
+        [ngClass]="{'is-invalid': (FormReg.controls.NombreFormato.touched || submitted)  
+            && FormReg.controls.NombreFormato.errors}" >
+                   
+                    <option *ngFor="let opt of OpcionesFormato" [ngValue]="opt.NombreFormato">
+                        ‌{{ opt.NombreFormato }}
+                    <option>
+                </select>
+				<span class="text-danger" *ngIf="(FormReg.controls.NombreFormato.touched || submitted) 
+                        && FormReg.controls.NombreFormato.errors?.required">
+                        enter value
+                </span>
+			</div>
+		</div>
+       
+	</fieldset>
+ <br>
+    <div class="container-fluid">
+	<!-- Botones Grabar, Cancelar/Volver' -->
+	<div class="row justify-content-center">
+		<button type="button" *ngIf="AccionABMC!=='C'" class="btn btn-primary col-1" (click)="Grabar()">
+            <span class="fas fa-save"></span> Save
+        </button>
+		&nbsp;
+		<button type="button" class="btn btn-warning col-1" (click)="Volver()">
+            <span class="fas fa-undo"></span> {{AccionABMC=='C' ? 'return' : 'Cancel'}}
+        </button>
+	</div>
+
+	<!--texto: Revisar los datos ingresados...-->
+	<div id="divMsjFormRegistro" *ngIf="submitted && FormReg.invalid" class="row alert alert-danger">
+		<span class="fas fa-exclamation-sign"></span>{{Mensajes['RD']}}
+    </div>
+    </div>
+    <div class="d-flex align-items-end flex-column text-info">
+        <div class="p-2"><b>Asterisk(*) = always</b><div class="p-2">Example: * * * = every minute of every hour of every day of the week.</div>     </div>             
+    </div>
+</form>		
+
+
+
+
+
+
+
+
+
+
+
+                                         <!--*ngIf="AccionABMC == 'A'"-->
+<form name="FormReg2" [formGroup]='FormReg2' *ngIf="AccionABMC == 'A2'" class="bg-light">
+    <h3 class="text-center">Scheduled ticket notification</h3>
+    <br>
+	<fieldset [disabled]="AccionABMC==='C'">       
+
+        <!--campo hora-->
+        <div class="form-group row">
+            <label class="col-form-label col-sm-2 col-sm-offset-2" for="Hora">Hour <span
+                        class="text-danger">*</span></label>
+            <div class="col-sm-6">
+                <input type="text" placeholder="0-23 or *" class="form-control" formControlName="Hora" 
+                 [ngClass]="{'is-invalid': (FormReg2.controls.Hora.touched || submitted2)  
+                    && FormReg2.controls.Hora.errors}" />
+    
+                    <span class="text-danger" *ngIf="(FormReg2.controls.Hora.touched || submitted2) 
+                            && FormReg2.controls.Hora.errors?.required">
+                            enter value
+                    </span>
+                    <span class="text-danger" *ngIf="(FormReg2.controls.Hora.touched || submitted2) 
+                           && (FormReg2.controls.Hora.errors?.min || FormReg2.controls.Hora.errors?.max) ">
+                           Error
+                    </span>
+                    <span class="text-danger" *ngIf="(FormReg2.controls.Hora.touched || submitted2) 
+                           && FormReg2.controls.Hora.errors?.pattern">
+                           only number
+                    </span>
+            </div>
+        </div>
+        <!--campo minuto-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="Minuto">Minute <span
+                    class="text-danger">*</span></label>
+			<div class="col-sm-6">
+				<input type="text" placeholder="0-59 or *" class="form-control" formControlName="Minuto" 
+         [ngClass]="{'is-invalid': (FormReg2.controls.Minuto.touched || submitted2)  
+            && FormReg2.controls.Minuto.errors}" />
+
+				<span class="text-danger" *ngIf="(FormReg2.controls.Minuto.touched || submitted2) 
+                        && FormReg2.controls.Minuto.errors?.required">
+                        enter value
+                </span>
+                <span class="text-danger col-12" *ngIf="(FormReg2.controls.Minuto.touched || submitted2) 
+                       && (FormReg2.controls.Minuto.errors?.min || FormReg2.controls.Minuto.errors?.max) ">
+                       Error
+                </span>
+                
+                <span class="text-danger" *ngIf="(FormReg2.controls.Minuto.touched || submitted2) 
+                       && FormReg2.controls.Minuto.errors?.pattern">
+                       only number
+                </span>
+			</div>
+        </div>   
+      
+
+        <!--campo diaSemana-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="DiaSemana">Weekday <span class="input-group-btn">                
+                <button type="button" class="btn btn-sm btn-outline-primary" title="Modificar"(click)="ModalFormato()" >
+                <span class="fas fa-question-circle"></span>
+                </button>                   
+              </span> <span
+                    class="text-danger">*</span></label>
+                     
+			<div class="col-sm-6">
+				<input type="text" placeholder="0-7 or *" class="form-control" formControlName="DiaSemana" 
+         [ngClass]="{'is-invalid': (FormReg2.controls.DiaSemana.touched || submitted2)  
+            && FormReg2.controls.DiaSemana.errors}" />
+
+				<span class="text-danger" *ngIf="(FormReg2.controls.DiaSemana.touched || submitted2) 
+                        && FormReg2.controls.DiaSemana.errors?.required">
+                        enter value
+                </span>
+                <span class="text-danger" *ngIf="(FormReg2.controls.DiaSemana.touched || submitted2) 
+                       && (FormReg2.controls.DiaSemana.errors?.min || FormReg2.controls.DiaSemana.errors?.max) ">
+                       Error
+                </span>
+                <span class="text-danger" *ngIf="(FormReg2.controls.DiaSemana.touched || submitted2) 
+                       && FormReg2.controls.DiaSemana.errors?.pattern">
+                       only number
+                </span>
+			</div>
+		</div>
+
+        <!--campo diaReminder-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="DayRemainder">Days to remind about <span
+                    class="text-danger">*</span></label>
+			<div class="col-sm-6">
+				<input type="text" class="form-control" formControlName="DayRemainder" 
+         [ngClass]="{'is-invalid': (FormReg2.controls.DayRemainder.touched || submitted2)  
+            && FormReg2.controls.DayRemainder.errors}" />
+
+				<span class="text-danger" *ngIf="(FormReg2.controls.DayRemainder.touched || submitted2) 
+                        && FormReg2.controls.DayRemainder.errors?.required">
+                        enter value
+                </span>
+                <span class="text-danger" *ngIf="(FormReg2.controls.DayRemainder.touched || submitted2) 
+                       && (FormReg2.controls.DayRemainder.errors?.min || FormReg2.controls.DayRemainder.errors?.max) ">
+                       Error
+                </span>
+                <span class="text-danger" *ngIf="(FormReg2.controls.DayRemainder.touched || submitted2) 
+                       && FormReg2.controls.DayRemainder.errors?.pattern">
+                       only number
+                </span>
+			</div>
+		</div>
+      
+        <!--campo proyectos-->
+        <div class="form-group row">
+			<label class="col-form-label col-sm-2 col-sm-offset-2" for="IdProyecto">
+                Projects <span class="text-danger">*</span>
+            </label>
+			<div class="col-sm-6">
+				<select name="IdProyecto" class="form-control form-select" formControlName="IdProyecto" (change)='CargarCategorias()'
+        [ngClass]="{'is-invalid': (FormReg2.controls.IdProyecto.touched || submitted2)  
+            && FormReg2.controls.IdProyecto.errors}" >
+                    
+                    <option *ngFor="let opt of OpcionesProyectos" [ngValue]="opt.id">
+                        ‌{{ opt.name }}
+                    <option>
+                      
+                </select>
+				<span class="text-danger" *ngIf="(FormReg2.controls.IdProyecto.touched || submitted2) 
+                        && FormReg2.controls.IdProyecto.errors?.required">
+                        enter value
+                </span>
+			</div>
+		</div>
+
+        <!--campo Categorias/Trackers-->
+        <div class="form-group row ">
+            <label class="col-form-label col-sm-2 col-sm-offset-2" for="IdCategoria">
+                Categories <span class="text-danger">*</span>
+            </label>
+            <div class="col-sm-6">
+                <select name="IdCategoria" class="form-control  form-select" formControlName="IdCategoria"
+        [ngClass]="{'is-invalid': (FormReg2.controls.IdCategoria.touched || submitted2)  
+            && FormReg2.controls.IdCategoria.errors}" >
+                    <option *ngFor="let opt of OpcionesCategoria" [ngValue]="opt.id">
+                        ‌{{ opt.name }}
+                    <option>
+                </select>
+                <span class="text-danger" *ngIf="(FormReg2.controls.IdCategoria.touched || submitted2) 
+                        && FormReg2.controls.IdCategoria.errors?.required">
+                        enter value
+                </span>
+            </div>
+        </div>
+
+
+        <!--campo Usuarios-->
+        <div class="form-group row col-lg-8 col-sm-8">			
+            <div class="input-group ">
+                <label class="col-form-label col-sm-2 col-sm-offset-2" for="IdUsuario">
+                    Users <span class="text-danger">*</span>
+                </label>
+               
+				<select name="IdUsuario" class="form-control form-select" formControlName="IdUsuario"
+        [ngClass]="{'is-invalid': (FormReg2.controls.IdUsuario.touched || submitted2)  
+            && FormReg2.controls.IdUsuario.errors}" >
+                   
+                    <option *ngFor="let opt of OpcionesUsuario" [ngValue]="opt.Id">
+                        ‌{{ opt.NombreUsuario }}                        
+                    <option>                       
+                </select>    
+                &nbsp;
+                <span class="input-group-btn">                
+                    <button type="button" class="w-100 btn btn-sm btn-outline-primary" title="Add user"(click)="AgregarUsuario()" >
+                    <span class="fas fa-plus"></span>
+                    </button>                   
+                </span>               
+				<span class="text-danger" *ngIf="(FormReg2.controls.IdUsuario.touched || submitted2) 
+                        && FormReg2.controls.IdUsuario.errors?.required">
+                        enter value
+                </span>			
+            </div>
+		</div>       
+        <div class="container pl-5 pr-5" id="divTablaResultados">
+            <h4 class="text-center">Users</h4>
+            <!--br-->
+            <table class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+                        <th class="text-center">Firstname</th>
+                        <th class="text-center">Lastname</th>            
+                        <th class="text-center">Delete</th>               
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let dto of OpcionesUsuarioSeleccionadas">
+                        <td class="text-center">{{dto.Firstname}}</td>
+                        <td class="text-center">{{dto.Lastname}}</td>                  
+                        <td class="text-center text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" (click)="BorrarUsuario(dto)">
+                                <span class="fas fa-trash"></span>
+                            </button>
+                        </td>                 
+                    </tr>
+                </tbody>
+            </table>   
+            <div id="divMsjFormRegistro" *ngIf="ErrorDias" class="row alert alert-warning">
+                <span class="fas fa-exclamation-sign"></span>User already added
+            </div>      
+        </div>
+	</fieldset>
+ <br>
+ 
+    <div class="container-fluid">
+	<!-- Botones Grabar, Cancelar/Volver' -->
+	<div class="row justify-content-center">
+		<button type="button" *ngIf="AccionABMC!=='C'" class="btn btn-primary col-1" (click)="Grabar2()">
+            <span class="fas fa-save"></span> Save
+        </button>
+		&nbsp;
+		<button type="button" class="btn btn-warning col-1" (click)="Volver()">
+            <span class="fas fa-undo"></span> {{AccionABMC=='C' ? 'return' : 'Cancel'}}
+        </button>
+	</div>
+
+	<!--texto: Revisar los datos ingresados...-->
+	<div id="divMsjFormRegistro" *ngIf="submitted2 && FormReg2.invalid" class="row alert alert-danger">
+		<span class="fas fa-exclamation-sign"></span>{{Mensajes['RD']}}
+    </div>
+    <div id="divMsjFormRegistro" *ngIf="SinUsuarios" class="row alert alert-danger">
+		<span class="fas fa-exclamation-sign"></span>Add users...
+    </div>
+    </div>
+    <div class="d-flex align-items-end flex-column text-info">
+        <div class="p-2"><b>Asterisk(*) = always</b><div class="p-2">Example: * * * = every minute of every hour of every day of the week.</div>     </div>             
+    </div>
+</form>	
+
+
+
+
+
+
+
+
+
+</div>
